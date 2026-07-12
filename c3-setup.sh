@@ -130,6 +130,9 @@ function set_latest_dir()
   local regexp='^[0-9]+\.[0-9]+\.[0-9]+$'
   local latest_dir="$(ls -1 | grep -E "$regexp" | sort -V | tail -1)"
 
+  [[ "" != "$latest_dir" ]] \
+    && check_latest_local "$latest_dir"
+
   check_latest_local "$latest_dir"
   link_file "$latest_dir" "latest"
   change_owner "$latest_dir"
