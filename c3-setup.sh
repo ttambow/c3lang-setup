@@ -11,6 +11,7 @@ MESSAGE_LATEST_LOCAL="latest c3 already linked"
 MESSAGE_LATEST_INSTALLED="latest c3 already installed"
 MESSAGE_MISSING_C3DIR="$C3DIR is missing, creating directory"
 MESSAGE_MISSING_SCRIPT="missing $SCRIPT_NAME, copying to $C3DIR"
+MESSAGE_NOT_INSTALLED="c3 is not installed"
 
 function change_owner()
 {
@@ -25,6 +26,9 @@ function check_latest_local()
 {
   current_path="$(basename "$1")"
   latest_path="$(basename "$(readlink -f "$C3DIR/latest")")"
+
+  [[ "$current_path" == "" ]] \
+    && echo "$MESSAGE_NOT_INSTALLED" && return
 
   [[ "$current_path" == "$latest_path" ]] \
     && echo "$MESSAGE_LATEST_LOCAL" && exit
