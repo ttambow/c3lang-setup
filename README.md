@@ -1,6 +1,8 @@
 # c3lang-setup
 helper(s) for installing and setting up c3lang. 
 
+only tested on linux.
+
 ## install
 ### download and install
 ```
