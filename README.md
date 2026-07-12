@@ -3,6 +3,8 @@ helper(s) for installing and setting up c3lang.
 
 only tested on linux.
 
+i think i broke it trying to make work with freebsd as well. will return to this later...
+
 ## install
 ### download and install
 ```
