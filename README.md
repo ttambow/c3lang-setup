@@ -7,8 +7,17 @@ i think i broke it trying to make work with freebsd as well. will return to this
 
 ## install
 ### download and install
-```
+
+```shell
   curl -L -O https://github.com/ttambow/c3lang-setup/raw/refs/heads/main/c3-setup.sh | bash
+```
+
+#### C3C_LIB environment variable
+
+update your profile with (i.e., .shrc): 
+
+```shell
+export C3C_LIB="/usr/local/bin/c3/latest/lib"
 ```
 
 ## crontab
