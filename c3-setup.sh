@@ -55,7 +55,7 @@ function check_c3script()
 function check_latest_local()
 {
   local current_path="$(basename "$1")"
-  local latest_path="$(basename "$(readlink -f "$C3DIR/latest")")"
+  local latest_path="$(basename "$(readlink --canonicalize "$C3DIR/latest")")"
 
   [[ "$current_path" == "" ]] &&
     echo "$MESSAGE_NOT_INSTALLED" && return
@@ -69,7 +69,7 @@ function check_latest_local()
 function check_latest_remote()
 {
   local c3c_latest_release_url="https://api.github.com/repos/c3lang/c3c/releases/latest"
-  local remote_version="$(curl -s $c3c_latest_release_url | jq -r '.tag_name' | sed 's/v//')"
+  local remote_version="$(curl --silent $c3c_latest_release_url | jq --raw-output '.tag_name' | sed 's/v//')"
   
   [[ -d "$C3DIR/$remote_version" ]] &&
     echo "$MESSAGE_LATEST_INSTALLED: $remote_version" ||
@@ -94,16 +94,16 @@ function download()
 
   echo "downloading latest version of $c3_remote_file from $c3c_repo_url "
   
-  curl -L -O "$c3c_repo_url"
-  tar -xzf "$c3_remote_file.tar.gz"
+  curl --location --remote-name "$c3c_repo_url"
+  tar --extract --gunzip --file "$c3_remote_file.tar.gz"
     
   echo "[SUDO] moving $remote_version to $C3DIR "
-  sudo mv -f c3 "$C3DIR/$remote_version"
+  sudo mv --force c3 "$C3DIR/$remote_version"
 
   check_c3script
 
   cd "$C3DIR" || return
-  rm -rf "$DOWNLOAD_DIR"
+  rm --force --recursive "$DOWNLOAD_DIR"
 }
 
 function init()
@@ -129,7 +129,7 @@ function link_file()
   local symlink="$2"
   
   echo "[SUDO] setting symlink $symlink to $file"
-  sudo ln -fs "$file" "$symlink"
+  sudo ln --force --symbolic "$file" "$symlink"
 }
 
 function main()
@@ -140,7 +140,7 @@ function main()
 
   [[ ! -f "$C3DIR/$SCRIPT_NAME" ]] &&
     echo "$MESSAGE_MISSING_SCRIPT" &&
-    sudo cp -f "$SCRIPT_NAME_FULL" "$C3DIR/$SCRIPT_NAME" || return
+    sudo cp --force "$SCRIPT_NAME_FULL" "$C3DIR/$SCRIPT_NAME" || return
 
   exit 0
 }
@@ -149,7 +149,7 @@ function prerequisites()
 {
   [[ ! -d "$C3DIR" ]] &&
     echo "$MESSAGE_MISSING_C3DIR" &&
-    sudo mkdir -p "$C3DIR" &&
+    sudo mkdir --parents "$C3DIR" &&
     change_owner "$C3DIR"
 }
 
@@ -158,7 +158,7 @@ function set_latest_dir()
   cd "$C3DIR" || return
 
   local regexp='^[0-9]+\.[0-9]+\.[0-9]+$'
-  local latest_dir="$(ls -1 | grep -E "$regexp" | sort -V | tail -1)"
+  local latest_dir="$(ls -1 | grep --extended-regexp "$regexp" | sort --version-sort | tail --lines 1)"
 
   [[ "" != "$latest_dir" ]] &&
     check_latest_local "$latest_dir"
